@@ -30,7 +30,7 @@ class TicToc(object):
 def load_notebook(filename):
     """load a notebook object from a filename"""
     if not os.path.exists(filename) and not filename.endswith(".ipynb"):
-        filename = filename + ".ipynb"
+        filename = f"{filename}.ipynb"
     with io.open(filename) as f:
         return nbf.read(f, as_version=4)
 

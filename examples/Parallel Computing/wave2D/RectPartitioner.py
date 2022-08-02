@@ -59,12 +59,12 @@ class RectPartitioner:
         Find the subdomain rank (tuple) for each processor and
         determine the neighbor info.
         """
-        
+
         nsd_ = self.nsd
         if nsd_<1:
             print('Number of space dimensions is %d, nothing to do' %nsd_)
             return
-        
+
         self.subd_rank = [-1,-1,-1]
         self.subd_lo_ix = [-1,-1,-1]
         self.subd_hi_ix = [-1,-1,-1]
@@ -93,7 +93,7 @@ class RectPartitioner:
             offsets[2] = self.num_parts[0]*self.num_parts[1]
             self.subd_rank[1] = (my_id%offsets[2])/self.num_parts[0]
             self.subd_rank[2] = my_id/offsets[2]
-                    
+
         print("my_id=%d, subd_rank: "%my_id, self.subd_rank)
         if my_id==0:
             print("offsets=", offsets)
@@ -105,13 +105,13 @@ class RectPartitioner:
                 self.lower_neighbors[i] = my_id-offsets[i]
             if rank<self.num_parts[i]-1:
                 self.upper_neighbors[i] = my_id+offsets[i]
-                
+
             k = self.global_num_cells[i]/self.num_parts[i]
             m = self.global_num_cells[i]%self.num_parts[i]
-            
+
             ix = rank*k+max(0,rank+m-self.num_parts[i])
             self.subd_lo_ix[i] = ix
-            
+
             ix = ix+k
             if rank>=(self.num_parts[i]-m):
                 ix = ix+1  # load balancing
@@ -120,10 +120,10 @@ class RectPartitioner:
             self.subd_hi_ix[i] = ix
 
         print("subd_rank:",self.subd_rank,\
-              "lower_neig:", self.lower_neighbors, \
-              "upper_neig:", self.upper_neighbors)
+                  "lower_neig:", self.lower_neighbors, \
+                  "upper_neig:", self.upper_neighbors)
         print("subd_rank:",self.subd_rank,"subd_lo_ix:", self.subd_lo_ix, \
-              "subd_hi_ix:", self.subd_hi_ix)
+                  "subd_hi_ix:", self.subd_hi_ix)
 
         
 class RectPartitioner1D(RectPartitioner):
@@ -156,9 +156,9 @@ class RectPartitioner2D(RectPartitioner):
         """
         Prepare the buffers to be used for later communications
         """
-        
+
         RectPartitioner.prepare_communication (self)
-        
+
         self.in_lower_buffers = [[], []]
         self.out_lower_buffers = [[], []]
         self.in_upper_buffers = [[], []]
@@ -222,7 +222,7 @@ class MPIRectPartitioner2D(RectPartitioner2D):
                 for i in xrange(0,loc_ny+1):
                     self.out_lower_buffers[0][i] = solution_array[1,i]
             mpi.Isend(self.out_lower_buffers[0], lower_x_neigh)
-            
+
         if upper_x_neigh>-1:
             mpi.Recv(self.in_upper_buffers[0], upper_x_neigh)
             if self.slice_copy:
@@ -250,7 +250,7 @@ class MPIRectPartitioner2D(RectPartitioner2D):
                 for i in xrange(0,loc_nx+1):
                     self.out_lower_buffers[1][i] = solution_array[i,1]
             mpi.Isend(self.out_lower_buffers[1], lower_y_neigh)
-            
+
         if upper_y_neigh>-1:
             mpi.Recv(self.in_upper_buffers[1], upper_y_neigh)
             if self.slice_copy:
@@ -261,7 +261,7 @@ class MPIRectPartitioner2D(RectPartitioner2D):
                     solution_array[i,loc_ny] = self.in_upper_buffers[1][i]
                     self.out_upper_buffers[1][i] = solution_array[i,loc_ny-1]
             mpi.Isend(self.out_upper_buffers[1], upper_y_neigh)
-            
+
         if lower_y_neigh>-1:
             mpi.Recv(self.in_lower_buffers[1], lower_y_neigh)
             if self.slice_copy:
@@ -324,7 +324,7 @@ class ZMQRectPartitioner2D(RectPartitioner2D):
                     self.out_lower_buffers[0][i] = solution_array[1,i]
             t = self.comm.west.send(self.out_lower_buffers[0], **flags)
             trackers.append(t)
-            
+
         if upper_x_neigh>-1:
             msg = self.comm.east.recv(copy=False)
             self.in_upper_buffers[0] = frombuffer(msg, dtype=dtype)
@@ -337,7 +337,7 @@ class ZMQRectPartitioner2D(RectPartitioner2D):
                     self.out_upper_buffers[0][i] = solution_array[loc_nx-1,i]
             t = self.comm.east.send(self.out_upper_buffers[0], **flags)
             trackers.append(t)
-            
+
 
         if lower_x_neigh>-1:
             msg = self.comm.west.recv(copy=False)
@@ -347,7 +347,7 @@ class ZMQRectPartitioner2D(RectPartitioner2D):
             else:
                 for i in xrange(0,loc_ny+1):
                     solution_array[0,i] = self.in_lower_buffers[0][i]
-        
+
         # communicate in the y-direction afterwards
         if lower_y_neigh>-1:
             if self.slice_copy:
@@ -357,8 +357,8 @@ class ZMQRectPartitioner2D(RectPartitioner2D):
                     self.out_lower_buffers[1][i] = solution_array[i,1]
             t = self.comm.south.send(self.out_lower_buffers[1], **flags)
             trackers.append(t)
-            
-            
+
+
         if upper_y_neigh>-1:
             msg = self.comm.north.recv(copy=False)
             self.in_upper_buffers[1] = frombuffer(msg, dtype=dtype)
@@ -371,7 +371,7 @@ class ZMQRectPartitioner2D(RectPartitioner2D):
                     self.out_upper_buffers[1][i] = solution_array[i,loc_ny-1]
             t = self.comm.north.send(self.out_upper_buffers[1], **flags)
             trackers.append(t)
-            
+
         if lower_y_neigh>-1:
             msg = self.comm.south.recv(copy=False)
             self.in_lower_buffers[1] = frombuffer(msg, dtype=dtype)
@@ -380,7 +380,7 @@ class ZMQRectPartitioner2D(RectPartitioner2D):
             else:
                 for i in xrange(0,loc_nx+1):
                     solution_array[i,0] = self.in_lower_buffers[1][i]
-        
+
         # wait for sends to complete:
         if flags['track']:
             for t in trackers:

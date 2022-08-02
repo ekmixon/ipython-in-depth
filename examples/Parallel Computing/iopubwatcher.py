@@ -32,7 +32,7 @@ def main(connection_file):
 
     reg_url = cfg['interface']
     iopub_port = cfg['iopub']
-    iopub_url = "%s:%s"%(reg_url, iopub_port)
+    iopub_url = f"{reg_url}:{iopub_port}"
 
     session = Session(key=str_to_bytes(cfg['key']))
     sub = ctx.socket(zmq.SUB)
@@ -59,14 +59,14 @@ def main(connection_file):
             # stdout/stderr
             # stream names are in msg['content']['name'], if you want to handle
             # them differently
-            print("%s: %s" % (topic, msg['content']['data']))
+            print(f"{topic}: {msg['content']['data']}")
         elif msg['msg_type'] == 'pyerr':
             # Python traceback
             c = msg['content']
-            print(topic + ':')
+            print(f'{topic}:')
             for line in c['traceback']:
                 # indent lines
-                print('    ' + line)
+                print(f'    {line}')
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

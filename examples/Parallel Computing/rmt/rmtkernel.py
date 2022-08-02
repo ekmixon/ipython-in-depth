@@ -17,8 +17,7 @@ def center_eigenvalue_diff(mat):
     """Compute the eigvals of mat and then find the center eigval difference."""
     N = len(mat)
     evals = np.sort(la.eigvals(mat))
-    diff = np.abs(evals[N/2] - evals[N/2-1])
-    return diff
+    return np.abs(evals[N/2] - evals[N/2-1])
 
 
 def ensemble_diffs(num, N):

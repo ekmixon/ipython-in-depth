@@ -67,7 +67,7 @@ def validate_tree(G, results):
         started = results[node].metadata.started
         for parent in G.predecessors(node):
             finished = results[parent].metadata.completed
-            assert started > finished, "%s should have happened after %s"%(node, parent)
+            assert started > finished, f"{node} should have happened after {parent}"
 
 def main(nodes, edges):
     """Generate a random graph, submit jobs, then validate that the
@@ -81,12 +81,9 @@ def main(nodes, edges):
     from matplotlib.cm import gist_rainbow
     print("building DAG")
     G = random_dag(nodes, edges)
-    jobs = {}
     pos = {}
     colors = {}
-    for node in G:
-        jobs[node] = randomwait
-    
+    jobs = {node: randomwait for node in G}
     client = parallel.Client()
     view = client.load_balanced_view()
     print("submitting %i tasks with %i dependencies"%(nodes,edges))

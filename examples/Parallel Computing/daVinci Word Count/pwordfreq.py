@@ -45,14 +45,14 @@ def pwordfreq(view, fnames):
 if __name__ == '__main__':
     # Create a Client and View
     rc = Client()
-    
+
     view = rc[:]
 
     if not os.path.exists('davinci.txt'):
         # download from project gutenberg
         print("Downloading Da Vinci's notebooks from Project Gutenberg")
         urlretrieve(davinci_url, 'davinci.txt')
-        
+
     # Run the serial version
     print("Serial word frequency count:")
     text = open('davinci.txt').read()
@@ -61,8 +61,8 @@ if __name__ == '__main__':
     toc = time.time()
     print_wordfreq(freqs, 10)
     print("Took %.3f s to calculate"%(toc-tic))
-    
-    
+
+
     # The parallel version
     print("\nParallel word frequency count:")
     # split the davinci.txt into one file per engine:
@@ -74,7 +74,7 @@ if __name__ == '__main__':
         chunk = lines[i*block:i*(block+1)]
         with open('davinci%i.txt'%i, 'w') as f:
             f.write('\n'.join(chunk))
-    
+
     try: #python2
         cwd = os.path.abspath(os.getcwdu())
     except AttributeError: #python3

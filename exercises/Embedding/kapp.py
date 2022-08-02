@@ -20,13 +20,11 @@ class SimpleKernelApp(object):
     def __init__(self, gui):
         # Start IPython kernel with GUI event loop support
         self.ipkernel = IPKernelApp.instance()
-        self.ipkernel.initialize(['python', '--gui=%s' % gui,
-                                  #'--log-level=10'  # for debugging
-                                  ])
+        self.ipkernel.initialize(['python', f'--gui={gui}'])
 
         # To create and track active qt consoles
         self.consoles = []
-        
+
         # This application will also act on the shell user namespace
         self.namespace = self.ipkernel.shell.user_ns
         # Keys present at startup so we don't print the entire pylab/numpy

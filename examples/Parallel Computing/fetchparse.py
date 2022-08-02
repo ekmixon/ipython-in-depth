@@ -30,8 +30,7 @@ def fetchAndParse(url, data=None):
         if page.headers.type == 'text/html':
             doc = BeautifulSoup.BeautifulSoup(page.read())
             for node in doc.findAll('a'):
-                href = node.get('href', None)
-                if href:
+                if href := node.get('href', None):
                     links.append(urlparse.urljoin(url, href))
         return links
 
@@ -88,10 +87,7 @@ class DistributedSpider(object):
                 self.onVisitDone(links, url)
 
 def main():
-    if len(sys.argv) > 1:
-        site = sys.argv[1]
-    else:
-        site = raw_input('Enter site to crawl: ')
+    site = sys.argv[1] if len(sys.argv) > 1 else raw_input('Enter site to crawl: ')
     distributedSpider = DistributedSpider(site)
     distributedSpider.run()
 

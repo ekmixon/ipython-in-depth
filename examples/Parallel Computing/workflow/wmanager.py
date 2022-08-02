@@ -36,9 +36,6 @@ if __name__ == '__main__':
     print('Started controller')
 
     # "Submit jobs"
-    eng = []
-    for i in range(4):
-        eng.append(Popen(['python', 'job_wrapper.py','x=%s' % i]))
-
+    eng = [Popen(['python', 'job_wrapper.py', f'x={i}']) for i in range(4)]
     # Ensure that all subpro
     atexit.register(lambda : cleanup(cont, eng))

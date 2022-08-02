@@ -14,9 +14,7 @@ def mpl_kernel(gui):
     """Launch and return an IPython kernel with matplotlib support for the desired gui
     """
     kernel = IPKernelApp.instance()
-    kernel.initialize(['python', '--matplotlib=%s' % gui,
-                       #'--log-level=10'
-                       ])
+    kernel.initialize(['python', f'--matplotlib={gui}'])
     return kernel
 
 

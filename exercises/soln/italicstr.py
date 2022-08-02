@@ -1,5 +1,5 @@
 class ItalicStr(str):
     def _repr_html_(self):
-        return '<i>%s</i>' % self
+        return f'<i>{self}</i>'
     
 ItalicStr('Hello World')

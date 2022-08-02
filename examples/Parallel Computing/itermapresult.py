@@ -63,5 +63,5 @@ print("running with two calls per task, with unordered results")
 # We can even iterate through faster results first, with ordered=False
 amr = v.map(sleep_here, [.01*t for t in range(100,0,-1)], ordered=False, chunksize=2)
 tic = time.time()
-for i,r in enumerate(amr):
+for r in amr:
     print("slept %.2fs on engine %i: %.3f" % (r[1], r[0], time.time()-tic))

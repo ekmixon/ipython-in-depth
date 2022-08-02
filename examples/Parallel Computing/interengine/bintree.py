@@ -49,13 +49,12 @@ def bintree(ids, parent=None):
     parents[root] = parent
     if len(ids) == 1:
         return parents
-    else:
-        ids = ids[1:]
-        n = len(ids)
-        left = bintree(ids[:n/2], parent=root)
-        right = bintree(ids[n/2:], parent=root)
-        parents.update(left)
-        parents.update(right)
+    ids = ids[1:]
+    n = len(ids)
+    left = bintree(ids[:n/2], parent=root)
+    right = bintree(ids[n/2:], parent=root)
+    parents |= left
+    parents.update(right)
     return parents
 
 def reverse_bintree(parents):
@@ -93,7 +92,7 @@ def depth(n, tree):
 def print_bintree(tree, indent='  '):
     """print a binary tree"""
     for n in sorted(tree.keys()):
-        print("%s%s" % (indent * depth(n,tree), n))
+        print(f"{indent * depth(n,tree)}{n}")
 
 #----------------------------------------------------------------------------
 # Communicator class for a binary-tree map
@@ -120,7 +119,7 @@ class BinaryTreeCommunicator(object):
     def __init__(self, id, interface='tcp://*', root=False):
         self.id = id
         self.root = root
-        
+
         # create context and sockets
         self._ctx = zmq.Context()
         if root:
@@ -130,18 +129,18 @@ class BinaryTreeCommunicator(object):
             self.sub.setsockopt(zmq.SUBSCRIBE, b'')
         self.downstream = self._ctx.socket(zmq.PULL)
         self.upstream = self._ctx.socket(zmq.PUSH)
-        
+
         # bind to ports
-        interface_f = interface + ":%i"
+        interface_f = f"{interface}:%i"
         if self.root:
             pub_port = self.pub.bind_to_random_port(interface)
             self.pub_url = interface_f % pub_port
-        
+
         tree_port = self.downstream.bind_to_random_port(interface)
         self.tree_url = interface_f % tree_port
         self.downstream_poller = zmq.Poller()
         self.downstream_poller.register(self.downstream, zmq.POLLIN)
-        
+
         # guess first public IP from socket
         self.location = socket.gethostbyname_ex(socket.gethostname())[-1][0]
     
@@ -226,13 +225,13 @@ class BinaryTreeCommunicator(object):
         """
         if not flat:
             value = reduce(f, value)
-        
-        for i in range(self.nchildren):
+
+        for _ in range(self.nchildren):
             value = f(value, self.recv_downstream())
-        
+
         if not self.root:
             self.send_upstream(value)
-        
+
         if all:
             if self.root:
                 self.publish(value)

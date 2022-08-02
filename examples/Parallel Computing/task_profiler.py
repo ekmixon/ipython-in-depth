@@ -49,7 +49,11 @@ def main():
         from IPython.utils.timing import time
 
     # the jobs should take a random time within a range
-    times = [random.random()*(opts.tmax-opts.tmin)+opts.tmin for i in range(opts.n)]
+    times = [
+        random.random() * (opts.tmax - opts.tmin) + opts.tmin
+        for _ in range(opts.n)
+    ]
+
     stime = sum(times)
 
     print("executing %i tasks, totalling %.1f secs on %i engines"%(opts.n, stime, nengines))

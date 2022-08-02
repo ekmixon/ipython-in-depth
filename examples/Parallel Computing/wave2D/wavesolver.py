@@ -128,9 +128,9 @@ class WaveSolver(object):
             for i in xrange(1,nx):
                 for j in xrange(1,ny):
                     u_2[i,j] = u_1[i,j] + \
-                           0.5*Cx2*(u_1[i-1,j] - 2*u_1[i,j] + u_1[i+1,j]) + \
-                           0.5*Cy2*(u_1[i,j-1] - 2*u_1[i,j] + u_1[i,j+1]) + \
-                           dt2*f(x[i], y[j], 0.0)
+                               0.5*Cx2*(u_1[i-1,j] - 2*u_1[i,j] + u_1[i+1,j]) + \
+                               0.5*Cy2*(u_1[i,j-1] - 2*u_1[i,j] + u_1[i,j+1]) + \
+                               dt2*f(x[i], y[j], 0.0)
 
             # boundary values of u_2 (equals u(t=dt) due to du/dt=0)
             i = 0
@@ -149,9 +149,9 @@ class WaveSolver(object):
         elif implementation['ic'] == 'vectorized':
             u_1 = I(xv,yv)
             u_2[1:nx,1:ny] = u_1[1:nx,1:ny] + \
-            0.5*Cx2*(u_1[0:nx-1,1:ny] - 2*u_1[1:nx,1:ny] + u_1[2:nx+1,1:ny]) + \
-            0.5*Cy2*(u_1[1:nx,0:ny-1] - 2*u_1[1:nx,1:ny] + u_1[1:nx,2:ny+1]) + \
-            dt2*(f(xv[1:nx,1:ny], yv[1:nx,1:ny], 0.0))
+                0.5*Cx2*(u_1[0:nx-1,1:ny] - 2*u_1[1:nx,1:ny] + u_1[2:nx+1,1:ny]) + \
+                0.5*Cy2*(u_1[1:nx,0:ny-1] - 2*u_1[1:nx,1:ny] + u_1[1:nx,2:ny+1]) + \
+                dt2*(f(xv[1:nx,1:ny], yv[1:nx,1:ny], 0.0))
             # boundary values (t=dt):
             i = 0;  u_2[i,:] = bc(x[i], y, t+dt)
             j = 0;  u_2[:,j] = bc(x, y[j], t+dt)

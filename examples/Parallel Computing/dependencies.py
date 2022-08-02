@@ -33,10 +33,10 @@ view = client.load_balanced_view()
 view.block=True
 
 # will run on anything:
-pids1 = [ view.apply(getpid) for i in range(len(client.ids)) ]
+pids1 = [view.apply(getpid) for _ in range(len(client.ids))]
 print(pids1)
 # will only run on e0:
-pids2 = [ view.apply(getpid2) for i in range(len(client.ids)) ]
+pids2 = [view.apply(getpid2) for _ in range(len(client.ids))]
 print(pids2)
 
 print("now test some dependency behaviors")
@@ -52,8 +52,15 @@ def wait_and_fail(t):
     time.sleep(t)
     return 1/0
 
-successes = [ view.apply_async(wait, 1).msg_ids[0] for i in range(len(client.ids)) ]
-failures = [ view.apply_async(wait_and_fail, 1).msg_ids[0] for i in range(len(client.ids)) ]
+successes = [
+    view.apply_async(wait, 1).msg_ids[0] for _ in range(len(client.ids))
+]
+
+failures = [
+    view.apply_async(wait_and_fail, 1).msg_ids[0]
+    for _ in range(len(client.ids))
+]
+
 
 mixed = [failures[0],successes[0]]
 d1a = Dependency(mixed, all=False, failure=True) # yes
